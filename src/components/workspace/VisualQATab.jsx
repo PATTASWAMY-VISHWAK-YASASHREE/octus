@@ -314,14 +314,32 @@ const VisualQATab = ({ projectId }) => {
 
   if (activeMode === 'ui') {
     return (
-      <div className="p-8 bg-gray-900 min-h-screen">
-        <div className="bg-gray-800 rounded-xl shadow-sm border border-gray-700 p-8">
-          {/* Header with History Button */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">Validate User Interface</h2>
+      <div className="p-8 bg-gradient-to-br from-gray-950 via-black to-gray-900 min-h-screen">
+        <div className="bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8">
+          {/* Header with Back Button and History Button */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  setActiveMode(null);
+                  setReferenceUI(null);
+                  setComparisonUI(null);
+                  setProgressChecks([]);
+                  setVisualRegressionResults(null);
+                  setUIComparisonResults(null);
+                }}
+                className="flex items-center gap-2 px-3 py-2 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white rounded-lg transition-all border border-slate-600/50 hover:border-slate-500/50"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <h2 className="text-3xl font-bold text-white">Validate User Interface</h2>
+            </div>
             <button
               onClick={() => setShowUIHistoryModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors border border-gray-600 hover:border-blue-500"
+              className="flex items-center gap-2 px-5 py-2.5 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-xl transition-all border border-slate-600/50 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/20"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -334,7 +352,14 @@ const VisualQATab = ({ projectId }) => {
           <div className="grid grid-cols-2 gap-6 mb-8">
             {/* Reference UI Section */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Reference UI</h3>
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                Reference UI
+              </h3>
               <label className="block">
                 <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition-colors bg-gray-700">
                   {referenceUI ? (
@@ -342,23 +367,27 @@ const VisualQATab = ({ projectId }) => {
                       <img
                         src={referenceUI.preview}
                         alt="Reference UI"
-                        className="w-full h-48 object-contain rounded"
+                        className="w-full h-56 object-contain rounded-lg shadow-lg"
                       />
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           setReferenceUI(null);
                         }}
-                        className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded hover:bg-red-600"
+                        className="absolute top-2 right-2 bg-red-500/90 hover:bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors shadow-lg"
                       >
                         Remove
                       </button>
                     </div>
                   ) : (
                     <>
-                      <div className="text-4xl mb-2">­ƒô©</div>
-                      <div className="text-sm text-gray-300 mb-1">Upload Reference UI</div>
-                      <div className="text-xs text-gray-400">Click to upload or drag and drop</div>
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      <div className="text-base font-medium text-white mb-1">Upload Reference UI</div>
+                      <div className="text-sm text-slate-400">Click to upload or drag and drop</div>
                     </>
                   )}
                   <input
@@ -373,31 +402,42 @@ const VisualQATab = ({ projectId }) => {
 
             {/* Comparison UI Section */}
             <div>
-              <h3 className="text-lg font-semibold text-white mb-4">Comparison UI</h3>
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                Comparison UI
+              </h3>
               <label className="block">
-                <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition-colors bg-gray-700">
+                <div className="border-2 border-dashed border-slate-600/50 rounded-xl p-8 text-center cursor-pointer hover:border-green-500/50 transition-all bg-slate-800/30 hover:bg-slate-800/50 group">
                   {comparisonUI ? (
                     <div className="relative">
                       <img
                         src={comparisonUI.preview}
                         alt="Comparison UI"
-                        className="w-full h-48 object-contain rounded"
+                        className="w-full h-56 object-contain rounded-lg shadow-lg"
                       />
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           setComparisonUI(null);
                         }}
-                        className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded hover:bg-red-600"
+                        className="absolute top-2 right-2 bg-red-500/90 hover:bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors shadow-lg"
                       >
                         Remove
                       </button>
                     </div>
                   ) : (
                     <>
-                      <div className="text-4xl mb-2">­ƒô©</div>
-                      <div className="text-sm text-gray-300 mb-1">Upload Comparison UI</div>
-                      <div className="text-xs text-gray-400">Click to upload or drag and drop</div>
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br from-green-500/20 to-green-600/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      <div className="text-base font-medium text-white mb-1">Upload Comparison UI</div>
+                      <div className="text-sm text-slate-400">Click to upload or drag and drop</div>
                     </>
                   )}
                   <input
@@ -415,24 +455,34 @@ const VisualQATab = ({ projectId }) => {
           {!isValidating && progressChecks.length === 0 && (
             <>
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-white mb-4">Validation Checks</h3>
+                <h3 className="text-xl font-semibold text-white mb-5">Validation Checks</h3>
                 <div className="space-y-4">
                   {/* Visual Regressions Check */}
-                  <div className="border-2 border-gray-600 rounded-lg p-4 bg-gray-700">
-                    <div className="flex items-start gap-3">
+                  <div className="border border-slate-700/50 rounded-xl p-5 bg-slate-800/30 backdrop-blur-sm hover:border-slate-600/50 transition-all">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-500/20 to-orange-600/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                      </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-white mb-1">1. Detect visual regressions</h4>
-                        <p className="text-sm text-gray-300">Wanna check any broken elements or overlap in UI?</p>
+                        <h4 className="font-semibold text-white mb-1.5 text-base">1. Detect visual regressions</h4>
+                        <p className="text-sm text-slate-400">Check for broken elements or overlap in UI</p>
                       </div>
                     </div>
                   </div>
 
                   {/* Missing Elements Check */}
-                  <div className="border-2 border-gray-600 rounded-lg p-4 bg-gray-700">
-                    <div className="flex items-start gap-3">
+                  <div className="border border-slate-700/50 rounded-xl p-5 bg-slate-800/30 backdrop-blur-sm hover:border-slate-600/50 transition-all">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-cyan-600/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                        </svg>
+                      </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-white mb-1">2. Missing elements / layout shifts</h4>
-                        <p className="text-sm text-gray-300">Wanna check missing elements / layout shifts?</p>
+                        <h4 className="font-semibold text-white mb-1.5 text-base">2. Missing elements / layout shifts</h4>
+                        <p className="text-sm text-slate-400">Check for missing elements and layout shifts</p>
                       </div>
                     </div>
                   </div>
@@ -444,7 +494,7 @@ const VisualQATab = ({ projectId }) => {
                 <button
                   onClick={handleGetReport}
                   disabled={!referenceUI || !comparisonUI}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white px-10 py-3.5 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-blue-500/25 disabled:hover:shadow-none"
                 >
                   Get Report
                 </button>
@@ -487,7 +537,7 @@ const VisualQATab = ({ projectId }) => {
                     setVisualRegressionResults(null);
                     setUIComparisonResults(null);
                   }}
-                  className="bg-gray-700 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+                  className="bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white px-8 py-3 rounded-xl font-semibold transition-all shadow-lg"
                 >
                   Start New Validation
                 </button>
@@ -508,14 +558,29 @@ const VisualQATab = ({ projectId }) => {
 
   if (activeMode === 'ux') {
     return (
-      <div className="p-8 bg-gray-900 min-h-screen">
-        <div className="bg-gray-800 rounded-xl shadow-sm border border-gray-700 p-8">
-          {/* Header with History Button */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">Upload UX Flow Screens</h2>
+      <div className="p-8 bg-gradient-to-br from-gray-950 via-black to-gray-900 min-h-screen">
+        <div className="bg-slate-900/40 backdrop-blur-sm rounded-2xl shadow-xl border border-slate-700/50 p-8">
+          {/* Header with Back Button and History Button */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  setActiveMode(null);
+                  setUxScreens([]);
+                  setValidationResults(null);
+                }}
+                className="flex items-center gap-2 px-3 py-2 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white rounded-lg transition-all border border-slate-600/50 hover:border-slate-500/50"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span className="text-sm font-medium">Back</span>
+              </button>
+              <h2 className="text-3xl font-bold text-white">Upload UX Flow Screens</h2>
+            </div>
             <button
               onClick={() => setShowHistoryModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors border border-gray-600 hover:border-blue-500"
+              className="flex items-center gap-2 px-5 py-2.5 bg-slate-800/60 hover:bg-slate-700/60 text-white rounded-xl transition-all border border-slate-600/50 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/20"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -525,12 +590,16 @@ const VisualQATab = ({ projectId }) => {
           </div>
           
           {/* Upload Area */}
-          <div className="mb-6">
-            <label className="block mb-4">
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 transition-colors bg-gray-700">
-                <div className="text-4xl mb-2">­ƒô©</div>
-                <div className="text-sm text-gray-300 mb-1">Click to upload or drag and drop</div>
-                <div className="text-xs text-gray-400">Upload screens in order from start to end</div>
+          <div className="mb-8">
+            <label className="block">
+              <div className="border-2 border-dashed border-slate-600/50 rounded-xl p-12 text-center cursor-pointer hover:border-blue-500/50 transition-all bg-slate-800/30 hover:bg-slate-800/50 group">
+                <div className="w-20 h-20 mx-auto mb-5 rounded-xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <div className="text-lg font-semibold text-white mb-2">Click to upload or drag and drop</div>
+                <div className="text-sm text-slate-400">Upload screens in order from start to end</div>
                 <input
                   type="file"
                   className="hidden"
@@ -545,30 +614,35 @@ const VisualQATab = ({ projectId }) => {
           {/* Preview Section */}
           {uxScreens.length > 0 && (
             <>
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-white">
+              <div className="mb-6">
+                <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
                   Uploaded Screens ({uxScreens.length})
                 </h3>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-4 gap-5 mb-8">
                 {uxScreens.map((screen, index) => (
                   <div key={screen.id} className="relative group">
-                    <div className="border border-gray-600 rounded-lg overflow-hidden bg-gray-700">
+                    <div className="border border-slate-700/50 rounded-xl overflow-hidden bg-slate-800/40 backdrop-blur-sm hover:border-slate-600/50 transition-all shadow-lg">
                       <img
                         src={screen.preview}
                         alt={`Screen ${index + 1}`}
-                        className="w-full h-40 object-cover"
+                        className="w-full h-48 object-cover"
                       />
                     </div>
-                    <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs font-semibold px-2 py-1 rounded">
+                    <div className="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg">
                       {index + 1}
                     </div>
                     <button
                       onClick={() => handleRemoveScreen(screen.id)}
-                      className="absolute top-2 right-2 bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-3 right-3 bg-red-500/90 hover:bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all shadow-lg"
                     >
-                      Ô£ò
+                      Remove
                     </button>
                   </div>
                 ))}
@@ -579,7 +653,7 @@ const VisualQATab = ({ projectId }) => {
                 <button
                   onClick={handleValidateUX}
                   disabled={isValidating}
-                  className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white px-10 py-3.5 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-blue-500/25 disabled:hover:shadow-none"
                 >
                   {isValidating ? 'Validating...' : 'Validate UX'}
                 </button>
@@ -592,28 +666,28 @@ const VisualQATab = ({ projectId }) => {
             <div className="mt-8 space-y-6">
               {/* Overall Assessment */}
               {validationResults.overall_assessment && (
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-gradient-to-r from-slate-800/40 to-slate-900/40 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold text-gray-900">Overall Assessment</h3>
+                    <h3 className="text-xl font-bold text-white">Overall Assessment</h3>
                     <div className="flex items-center gap-3">
                       <span className={`px-4 py-2 rounded-lg font-semibold ${
                         validationResults.overall_assessment.severity === 'good' 
-                          ? 'bg-green-100 text-green-700'
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
                           : validationResults.overall_assessment.severity === 'warning'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-red-100 text-red-700'
+                          ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                          : 'bg-red-500/20 text-red-400 border border-red-500/30'
                       }`}>
                         {validationResults.overall_assessment.severity?.toUpperCase()}
                       </span>
                       <div className="text-right">
-                        <div className="text-2xl font-bold text-blue-600">
+                        <div className="text-2xl font-bold text-blue-400">
                           {validationResults.overall_assessment.flow_quality_score}
                         </div>
-                        <div className="text-xs text-gray-600">Quality Score</div>
+                        <div className="text-xs text-slate-400">Quality Score</div>
                       </div>
                     </div>
                   </div>
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-slate-300 leading-relaxed">
                     {validationResults.overall_assessment.summary}
                   </p>
                 </div>
@@ -621,8 +695,8 @@ const VisualQATab = ({ projectId }) => {
 
               {/* Flow Analysis */}
               {validationResults.flow_analysis && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Flow Analysis</h3>
+                <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 p-6">
+                  <h3 className="text-lg font-bold text-white mb-4">Flow Analysis</h3>
                   
                   {validationResults.flow_analysis.logical_order && (
                     <div className="mb-4">
@@ -632,16 +706,16 @@ const VisualQATab = ({ projectId }) => {
                             ? 'bg-green-500' 
                             : 'bg-red-500'
                         }`}></span>
-                        <h4 className="font-semibold text-gray-900">Logical Order</h4>
+                        <h4 className="font-semibold text-white">Logical Order</h4>
                       </div>
-                      <p className="text-gray-600 text-sm ml-5">
+                      <p className="text-slate-300 text-sm ml-5">
                         {validationResults.flow_analysis.logical_order.description}
                       </p>
                       {validationResults.flow_analysis.logical_order.issues?.length > 0 && (
                         <div className="ml-5 mt-2">
                           {validationResults.flow_analysis.logical_order.issues.map((issue, idx) => (
-                            <div key={idx} className="flex items-start gap-2 text-sm text-amber-700 bg-amber-50 p-2 rounded mt-1">
-                              <span>ÔÜá´©Å</span>
+                            <div key={idx} className="flex items-start gap-2 text-sm text-orange-400 bg-orange-500/10 border border-orange-500/20 p-2 rounded mt-1">
+                              <span>⚠</span>
                               <span>{issue}</span>
                             </div>
                           ))}
@@ -653,23 +727,23 @@ const VisualQATab = ({ projectId }) => {
                   {/* Screen Transitions */}
                   {validationResults.flow_analysis.screen_transitions?.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Screen Transitions</h4>
+                      <h4 className="font-semibold text-white mb-3">Screen Transitions</h4>
                       <div className="space-y-2">
                         {validationResults.flow_analysis.screen_transitions.map((transition, idx) => (
-                          <div key={idx} className="bg-gray-50 rounded-lg p-4">
+                          <div key={idx} className="bg-slate-800/40 border border-slate-700/50 rounded-lg p-4">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="font-medium text-gray-900">
-                                Screen {transition.from_screen} ÔåÆ Screen {transition.to_screen}
+                              <span className="font-medium text-white">
+                                Screen {transition.from_screen} → Screen {transition.to_screen}
                               </span>
-                              <span className="text-sm text-gray-600">({transition.transition_type})</span>
+                              <span className="text-sm text-slate-400">({transition.transition_type})</span>
                               {transition.is_smooth && (
-                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Smooth</span>
+                                <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-1 rounded">Smooth</span>
                               )}
                             </div>
                             {transition.issues?.length > 0 && (
                               <div className="space-y-1">
                                 {transition.issues.map((issue, i) => (
-                                  <p key={i} className="text-sm text-gray-600 ml-4">ÔÇó {issue}</p>
+                                  <p key={i} className="text-sm text-slate-300 ml-4">• {issue}</p>
                                 ))}
                               </div>
                             )}
@@ -683,33 +757,33 @@ const VisualQATab = ({ projectId }) => {
 
               {/* Screen by Screen Analysis */}
               {validationResults.screen_by_screen_analysis?.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Screen by Screen Analysis</h3>
+                <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 p-6">
+                  <h3 className="text-lg font-bold text-white mb-4">Screen by Screen Analysis</h3>
                   <div className="space-y-4">
                     {validationResults.screen_by_screen_analysis.map((screen, idx) => (
-                      <div key={idx} className="border border-gray-200 rounded-lg p-4">
+                      <div key={idx} className="border border-slate-700/50 bg-slate-800/30 rounded-lg p-4">
                         <div className="flex items-center gap-3 mb-3">
-                          <span className="bg-blue-600 text-white font-bold px-3 py-1 rounded">
+                          <span className="bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold px-3 py-1 rounded-lg shadow-lg">
                             {screen.screen_index}
                           </span>
-                          <h4 className="font-semibold text-gray-900">{screen.screen_title}</h4>
+                          <h4 className="font-semibold text-white">{screen.screen_title}</h4>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4 mb-3">
                           {screen.fields_present?.length > 0 && (
                             <div>
-                              <h5 className="text-sm font-semibold text-green-700 mb-1">Ô£ô Fields Present</h5>
-                              <ul className="text-sm text-gray-600 space-y-1">
+                              <h5 className="text-sm font-semibold text-green-400 mb-1">✓ Fields Present</h5>
+                              <ul className="text-sm text-slate-300 space-y-1">
                                 {screen.fields_present.map((field, i) => (
-                                  <li key={i}>ÔÇó {field}</li>
+                                  <li key={i}>• {field}</li>
                                 ))}
                               </ul>
                             </div>
                           )}
                           {screen.missing_fields?.length > 0 && (
                             <div>
-                              <h5 className="text-sm font-semibold text-red-700 mb-1">Ô£ù Missing Fields</h5>
-                              <ul className="text-sm text-gray-600 space-y-1">
+                            <h5 className="text-sm font-semibold text-red-400 mb-1">✗ Missing Fields</h5>
+                              <ul className="text-sm text-slate-300 space-y-1">
                                 {screen.missing_fields.map((field, i) => (
                                   <li key={i}>ÔÇó {field}</li>
                                 ))}
@@ -720,7 +794,7 @@ const VisualQATab = ({ projectId }) => {
 
                         {screen.issues?.length > 0 && (
                           <div className="mb-3">
-                            <h5 className="text-sm font-semibold text-gray-900 mb-2">Issues</h5>
+                            <h5 className="text-sm font-semibold text-white mb-2">Issues</h5>
                             <div className="space-y-2">
                               {screen.issues.map((issue, i) => (
                                 <div key={i} className={`text-sm p-2 rounded ${
@@ -739,8 +813,8 @@ const VisualQATab = ({ projectId }) => {
 
                         {screen.recommendations?.length > 0 && (
                           <div>
-                            <h5 className="text-sm font-semibold text-gray-900 mb-2">­ƒÆí Recommendations</h5>
-                            <ul className="text-sm text-gray-600 space-y-1">
+                            <h5 className="text-sm font-semibold text-white mb-2">💡 Recommendations</h5>
+                            <ul className="text-sm text-slate-300 space-y-1">
                               {screen.recommendations.map((rec, i) => (
                                 <li key={i}>ÔÇó {rec}</li>
                               ))}
@@ -755,8 +829,8 @@ const VisualQATab = ({ projectId }) => {
 
               {/* Consistency Check */}
               {validationResults.consistency_check && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Consistency Check</h3>
+                <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 p-6">
+                  <h3 className="text-lg font-bold text-white mb-4">Consistency Check</h3>
                   <div className="grid grid-cols-3 gap-4">
                     {validationResults.consistency_check.visual_consistency && (
                       <div className="border border-gray-200 rounded-lg p-4">
@@ -766,10 +840,10 @@ const VisualQATab = ({ projectId }) => {
                               ? 'bg-green-500' 
                               : 'bg-red-500'
                           }`}></span>
-                          <h4 className="font-semibold text-gray-900">Visual</h4>
+                          <h4 className="font-semibold text-white">Visual</h4>
                         </div>
                         {validationResults.consistency_check.visual_consistency.issues?.length > 0 && (
-                          <ul className="text-sm text-gray-600 space-y-1">
+                          <ul className="text-sm text-slate-300 space-y-1">
                             {validationResults.consistency_check.visual_consistency.issues.map((issue, i) => (
                               <li key={i}>ÔÇó {issue}</li>
                             ))}
@@ -786,10 +860,10 @@ const VisualQATab = ({ projectId }) => {
                               ? 'bg-green-500' 
                               : 'bg-red-500'
                           }`}></span>
-                          <h4 className="font-semibold text-gray-900">Navigation</h4>
+                          <h4 className="font-semibold text-white">Navigation</h4>
                         </div>
                         {validationResults.consistency_check.navigation_consistency.issues?.length > 0 && (
-                          <ul className="text-sm text-gray-600 space-y-1">
+                          <ul className="text-sm text-slate-300 space-y-1">
                             {validationResults.consistency_check.navigation_consistency.issues.map((issue, i) => (
                               <li key={i}>ÔÇó {issue}</li>
                             ))}
@@ -806,10 +880,10 @@ const VisualQATab = ({ projectId }) => {
                               ? 'bg-green-500' 
                               : 'bg-red-500'
                           }`}></span>
-                          <h4 className="font-semibold text-gray-900">Branding</h4>
+                          <h4 className="font-semibold text-white">Branding</h4>
                         </div>
                         {validationResults.consistency_check.branding_consistency.issues?.length > 0 && (
-                          <ul className="text-sm text-gray-600 space-y-1">
+                          <ul className="text-sm text-slate-300 space-y-1">
                             {validationResults.consistency_check.branding_consistency.issues.map((issue, i) => (
                               <li key={i}>ÔÇó {issue}</li>
                             ))}
@@ -823,8 +897,8 @@ const VisualQATab = ({ projectId }) => {
 
               {/* Recommendations */}
               {validationResults.recommendations?.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Key Recommendations</h3>
+                <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 p-6">
+                  <h3 className="text-lg font-bold text-white mb-4">Key Recommendations</h3>
                   <div className="space-y-3">
                     {validationResults.recommendations.map((rec, idx) => (
                       <div key={idx} className={`border-l-4 p-4 rounded ${
@@ -844,11 +918,11 @@ const VisualQATab = ({ projectId }) => {
                           }`}>
                             {rec.priority?.toUpperCase()}
                           </span>
-                          <span className="text-sm font-semibold text-gray-700">{rec.category}</span>
+                          <span className="text-sm font-semibold text-slate-300">{rec.category}</span>
                         </div>
-                        <p className="text-sm text-gray-700">{rec.description}</p>
+                        <p className="text-sm text-slate-300">{rec.description}</p>
                         {rec.affected_screens?.length > 0 && (
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-slate-400 mt-1">
                             Affects screens: {rec.affected_screens.join(', ')}
                           </p>
                         )}
@@ -860,35 +934,35 @@ const VisualQATab = ({ projectId }) => {
 
               {/* User Journey Assessment */}
               {validationResults.user_journey_assessment && (
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">User Journey Assessment</h3>
+                <div className="bg-gradient-to-r from-slate-800/40 to-slate-900/40 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+                  <h3 className="text-lg font-bold text-white mb-4">User Journey Assessment</h3>
                   
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-purple-600">
+                      <div className="text-3xl font-bold text-blue-400">
                         {validationResults.user_journey_assessment.clarity}
                       </div>
-                      <div className="text-sm text-gray-600">Clarity</div>
+                      <div className="text-sm text-slate-400">Clarity</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-purple-600">
+                      <div className="text-3xl font-bold text-blue-400">
                         {validationResults.user_journey_assessment.ease_of_use}
                       </div>
-                      <div className="text-sm text-gray-600">Ease of Use</div>
+                      <div className="text-sm text-slate-400">Ease of Use</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-purple-600">
+                      <div className="text-3xl font-bold text-blue-400">
                         {validationResults.user_journey_assessment.completion_likelihood}
                       </div>
-                      <div className="text-sm text-gray-600">Completion Likelihood</div>
+                      <div className="text-sm text-slate-400">Completion Likelihood</div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     {validationResults.user_journey_assessment.strengths?.length > 0 && (
                       <div>
-                        <h4 className="font-semibold text-green-700 mb-2">Ô£ô Strengths</h4>
-                        <ul className="text-sm text-gray-700 space-y-1">
+                        <h4 className="font-semibold text-green-400 mb-2">✓ Strengths</h4>
+                        <ul className="text-sm text-slate-300 space-y-1">
                           {validationResults.user_journey_assessment.strengths.map((strength, i) => (
                             <li key={i}>ÔÇó {strength}</li>
                           ))}
@@ -897,8 +971,8 @@ const VisualQATab = ({ projectId }) => {
                     )}
                     {validationResults.user_journey_assessment.pain_points?.length > 0 && (
                       <div>
-                        <h4 className="font-semibold text-red-700 mb-2">ÔÜá´©Å Pain Points</h4>
-                        <ul className="text-sm text-gray-700 space-y-1">
+                        <h4 className="font-semibold text-red-400 mb-2">⚠ Pain Points</h4>
+                        <ul className="text-sm text-slate-300 space-y-1">
                           {validationResults.user_journey_assessment.pain_points.map((point, i) => (
                             <li key={i}>ÔÇó {point}</li>
                           ))}
@@ -911,15 +985,15 @@ const VisualQATab = ({ projectId }) => {
 
               {/* Missing Steps */}
               {validationResults.missing_steps?.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Missing Steps</h3>
+                <div className="bg-slate-900/40 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 p-6">
+                  <h3 className="text-lg font-bold text-white mb-4">Missing Steps</h3>
                   <div className="space-y-3">
                     {validationResults.missing_steps.map((step, idx) => (
-                      <div key={idx} className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                        <div className="font-semibold text-gray-900 mb-1">
+                      <div key={idx} className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                        <div className="font-semibold text-white mb-1">
                           After Screen {step.after_screen}: {step.suggested_screen}
                         </div>
-                        <p className="text-sm text-gray-700">{step.reason}</p>
+                        <p className="text-sm text-slate-300">{step.reason}</p>
                       </div>
                     ))}
                   </div>
@@ -940,49 +1014,67 @@ const VisualQATab = ({ projectId }) => {
   }
 
   return (
-    <div className="p-8 bg-gray-900 min-h-screen">
+    <div className="p-8">
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold text-white mb-2">Visual QA Analysis</h2>
+        <p className="text-slate-400">Choose your validation type to get started</p>
+      </div>
+
       <div className="grid grid-cols-2 gap-6">
         {/* Validate UX Card */}
-        <div className="bg-gray-800 rounded-xl shadow-sm border border-gray-700 p-8 flex flex-col">
-          <h2 className="text-2xl font-bold text-white mb-3">Validate UX</h2>
-          <h3 className="text-lg font-semibold text-gray-200 mb-4">Validate User Experience?</h3>
-          <p className="text-gray-300 mb-auto">
-            Give your UI shots, we gonna handle the user flow with clear insights
+        <div className="group bg-slate-900/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 hover:border-slate-600/50 transition-all cursor-pointer"
+             onClick={() => handleGetStarted('ux')}>
+          <div className="flex items-start justify-between mb-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <svg className="w-6 h-6 text-slate-500 group-hover:text-slate-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+          
+          <h3 className="text-2xl font-bold text-white mb-3">Validate UX</h3>
+          <p className="text-slate-400 mb-6 leading-relaxed">
+            Validate User Experience flow by analyzing multiple screens. Get insights on user journey, flow logic, and screen transitions.
           </p>
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={() => handleGetStarted('ux')}
-              className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-500 transition-colors"
-            >
-              Get Started
-            </button>
+          
+          <div className="flex items-center space-x-2 text-sm text-slate-500">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Multi-screen flow analysis</span>
           </div>
         </div>
 
         {/* Validate UI Card */}
-        <div className="bg-gray-800 rounded-xl shadow-sm border border-gray-700 p-8 flex flex-col">
-          <h2 className="text-2xl font-bold text-white mb-3">Validate UI</h2>
-          <h3 className="text-lg font-semibold text-gray-200 mb-4">Validate User Interface</h3>
-          <p className="text-gray-300 mb-auto">
-            Give your UI shots, we gonna handle user interface with clear insights
+        <div className="group bg-slate-900/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 hover:border-slate-600/50 transition-all cursor-pointer"
+             onClick={() => handleGetStarted('ui')}>
+          <div className="flex items-start justify-between mb-6">
+            <div className="w-14 h-14 bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl flex items-center justify-center shadow-lg shadow-slate-900/50">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+              </svg>
+            </div>
+            <svg className="w-6 h-6 text-slate-500 group-hover:text-slate-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+          
+          <h3 className="text-2xl font-bold text-white mb-3">Validate UI</h3>
+          <p className="text-slate-400 mb-6 leading-relaxed">
+            Validate User Interface by comparing reference and comparison screens. Detect visual regressions, missing elements, and layout shifts.
           </p>
-          <div className="flex justify-end mt-6">
-            <button
-              onClick={() => handleGetStarted('ui')}
-              className="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-blue-500 transition-colors"
-            >
-              Get Started
-            </button>
+          
+          <div className="flex items-center space-x-2 text-sm text-slate-500">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Visual regression detection</span>
           </div>
         </div>
       </div>
-
-      {/* History Modal */}
-      <UXValidationHistoryModal
-        projectId={projectId}
-        isOpen={showHistoryModal}
-        onClose={() => setShowHistoryModal(false)}
-      />
     </div>
   );
 };

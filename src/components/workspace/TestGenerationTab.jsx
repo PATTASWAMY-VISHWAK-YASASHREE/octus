@@ -18,7 +18,7 @@ const TYPE_ICONS = {
   happy_path: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
   negative: <ShieldAlert className="w-4 h-4 text-red-400" />,
   edge_case: <Beaker className="w-4 h-4 text-amber-400" />,
-  boundary: <BarChart3 className="w-4 h-4 text-violet-400" />,
+  boundary: <BarChart3 className="w-4 h-4 text-cyan-400" />,
   security: <ShieldAlert className="w-4 h-4 text-rose-400" />,
   performance: <Zap className="w-4 h-4 text-sky-400" />,
 };
@@ -194,31 +194,26 @@ const TestGenerationTab = ({ projectId }) => {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-white">AI Test Generator</h2>
-            <p className="text-sm text-dark-400">Powered by Google Gemini</p>
-          </div>
+      <div className="flex items-center justify-between mb-10">
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-2">AI Test Generator</h2>
+          <p className="text-sm text-slate-400">Powered by Google Gemini</p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex gap-3">
           <button
             onClick={() => setActiveView('generate')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'generate'
-              ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-              : 'text-dark-400 hover:text-white hover:bg-dark-800'
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeView === 'generate'
+              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/10'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent'
               }`}
           >
             Generate
           </button>
           <button
             onClick={() => { setActiveView('history'); loadHistory(); }}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'history'
-              ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-              : 'text-dark-400 hover:text-white hover:bg-dark-800'
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${activeView === 'history'
+              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-lg shadow-blue-500/10'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent'
               }`}
           >
             History ({history.length})
@@ -228,14 +223,14 @@ const TestGenerationTab = ({ projectId }) => {
 
       {activeView === 'generate' ? (
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          {/* Left Panel ÔÇö Input Form */}
+          {/* Left Panel — Input Form */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="card-dark rounded-2xl p-6">
+            <div className="bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
               <h3 className="text-lg font-semibold text-white mb-4">Story Input</h3>
 
               {/* User Story */}
               <div className="mb-5">
-                <label className="block text-sm font-medium text-dark-200 mb-2">
+                <label className="block text-sm font-medium text-slate-200 mb-2">
                   User Story *
                 </label>
                 <textarea
@@ -243,14 +238,14 @@ const TestGenerationTab = ({ projectId }) => {
                   onChange={(e) => setForm({ ...form, userStory: e.target.value })}
                   rows={4}
                   placeholder="As a [role], I want to [action] so that [benefit]..."
-                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-slate-800/60 border-2 border-slate-700/50 rounded-xl text-white placeholder-slate-500/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
                   style={{ color: '#fff', WebkitTextFillColor: '#fff', caretColor: '#fff' }}
                 />
               </div>
 
               {/* Acceptance Criteria */}
               <div className="mb-5">
-                <label className="block text-sm font-medium text-dark-200 mb-2">
+                <label className="block text-sm font-medium text-slate-200 mb-2">
                   Acceptance Criteria
                 </label>
                 <textarea
@@ -258,14 +253,14 @@ const TestGenerationTab = ({ projectId }) => {
                   onChange={(e) => setForm({ ...form, acceptanceCriteria: e.target.value })}
                   rows={3}
                   placeholder="One criterion per line&#10;- Users can log in with email&#10;- Password must be 8+ chars"
-                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all resize-none"
+                  className="w-full px-4 py-3 bg-slate-800/60 border-2 border-slate-700/50 rounded-xl text-white placeholder-slate-500/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
                   style={{ color: '#fff', WebkitTextFillColor: '#fff', caretColor: '#fff' }}
                 />
               </div>
 
               {/* Component / Page */}
               <div className="mb-5">
-                <label className="block text-sm font-medium text-dark-200 mb-2">
+                <label className="block text-sm font-medium text-slate-200 mb-2">
                   Component / Page
                 </label>
                 <input
@@ -273,7 +268,7 @@ const TestGenerationTab = ({ projectId }) => {
                   value={form.component}
                   onChange={(e) => setForm({ ...form, component: e.target.value })}
                   placeholder="e.g. Login Page, Checkout Flow"
-                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800/60 border-2 border-slate-700/50 rounded-xl text-white placeholder-slate-500/50 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                   style={{ color: '#fff', WebkitTextFillColor: '#fff', caretColor: '#fff' }}
                 />
               </div>
@@ -285,22 +280,22 @@ const TestGenerationTab = ({ projectId }) => {
                   <select
                     value={form.priority}
                     onChange={(e) => setForm({ ...form, priority: e.target.value })}
-                    className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/60 border-2 border-slate-700/50 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     style={{ color: '#fff', WebkitTextFillColor: '#fff' }}
                   >
                     {['P0', 'P1', 'P2', 'P3'].map((p) => (
-                      <option key={p} value={p} style={{ backgroundColor: '#1e293b', color: '#fff' }}>{p} ÔÇö {
+                      <option key={p} value={p} style={{ backgroundColor: '#1e293b', color: '#fff' }}>{p} — {
                         { P0: 'Critical', P1: 'High', P2: 'Medium', P3: 'Low' }[p]
                       }</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-200 mb-2">Format</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Format</label>
                   <select
                     value={form.format}
                     onChange={(e) => setForm({ ...form, format: e.target.value })}
-                    className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800/60 border-2 border-slate-700/50 rounded-xl text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     style={{ color: '#fff', WebkitTextFillColor: '#fff' }}
                   >
                     <option value="gherkin" style={{ backgroundColor: '#1e293b', color: '#fff' }}>Gherkin / BDD</option>
@@ -311,10 +306,10 @@ const TestGenerationTab = ({ projectId }) => {
               </div>
 
               {/* GitHub Context Section */}
-              <div className="border-t border-dark-700 pt-5">
+              <div className="border-t border-slate-700/50 pt-5 mt-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                    <Github className="w-4 h-4 text-violet-400" />
+                    <Github className="w-4 h-4 text-blue-400" />
                     GitHub Context
                   </h3>
                   {ghToken ? (
@@ -330,7 +325,7 @@ const TestGenerationTab = ({ projectId }) => {
                 {!ghToken ? (
                   <button
                     onClick={connectGitHub}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-dark-800 hover:bg-dark-700 border-2 border-dashed border-dark-600 hover:border-violet-500/50 rounded-xl text-sm text-dark-300 hover:text-white transition-all"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-800/60 hover:bg-slate-700/60 border-2 border-dashed border-slate-600/50 hover:border-blue-500/50 rounded-xl text-sm text-slate-300 hover:text-white transition-all"
                   >
                     <Github className="w-5 h-5" />
                     <span>Connect to GitHub</span>
@@ -363,7 +358,7 @@ const TestGenerationTab = ({ projectId }) => {
                             setRunStatus(null);
                             if (repo) loadGhFiles(repo);
                           }}
-                          className="w-full px-3 py-2.5 bg-dark-800 border-2 border-dark-700 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition-all text-sm"
+                          className="w-full px-3 py-2.5 bg-slate-800/60 border-2 border-slate-700/50 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm"
                           style={{ color: '#fff', WebkitTextFillColor: '#fff' }}
                         >
                           <option value="" style={{ backgroundColor: '#1e293b' }}>Select a repository...</option>
@@ -386,23 +381,23 @@ const TestGenerationTab = ({ projectId }) => {
                             Loading file tree...
                           </div>
                         ) : (
-                          <div className="bg-dark-800 border-2 border-dark-700 rounded-lg overflow-hidden">
+                          <div className="bg-slate-800/60 border-2 border-slate-700/50 rounded-lg overflow-hidden">
                             {/* Search */}
-                            <div className="flex items-center gap-2 px-3 py-2 border-b border-dark-700">
-                              <Search className="w-3.5 h-3.5 text-dark-500" />
+                            <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-700/50">
+                              <Search className="w-3.5 h-3.5 text-slate-500" />
                               <input
                                 type="text"
                                 value={ghFileSearch}
                                 onChange={(e) => setGhFileSearch(e.target.value)}
                                 placeholder="Search files..."
-                                className="w-full bg-transparent border-none outline-none text-xs placeholder-dark-500"
+                                className="w-full bg-transparent border-none outline-none text-xs text-white placeholder-slate-500"
                                 style={{ color: '#fff', WebkitTextFillColor: '#fff', caretColor: '#fff' }}
                               />
                             </div>
                             {/* File list */}
                             <div className="max-h-40 overflow-y-auto">
                               {filteredFiles.length === 0 ? (
-                                <div className="px-3 py-4 text-center text-xs text-dark-500">
+                                <div className="px-3 py-4 text-center text-xs text-slate-500">
                                   {ghFileSearch ? 'No files match' : 'No files found'}
                                 </div>
                               ) : (
@@ -416,8 +411,8 @@ const TestGenerationTab = ({ projectId }) => {
                                       setRunStatus(null);
                                     }}
                                     className={`w-full text-left px-3 py-1.5 text-xs transition-colors flex items-center gap-2 ${ghSelectedFile === f.path
-                                      ? 'bg-violet-500/20 text-violet-300'
-                                      : 'text-dark-300 hover:bg-dark-700 hover:text-white'
+                                      ? 'bg-blue-500/20 text-blue-300'
+                                      : 'text-slate-300 hover:bg-slate-700/60 hover:text-white'
                                       }`}
                                   >
                                     <Code2 className="w-3 h-3 flex-shrink-0" />
@@ -447,7 +442,7 @@ const TestGenerationTab = ({ projectId }) => {
               <button
                 onClick={handleGenerate}
                 disabled={loading || !form.userStory.trim()}
-                className="w-full py-3.5 rounded-xl text-white font-semibold transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-lg shadow-violet-500/20"
+                className="w-full py-3.5 rounded-xl text-white font-semibold transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 shadow-lg hover:shadow-blue-500/25 mt-6"
               >
                 {loading ? (
                   <>
@@ -475,30 +470,30 @@ const TestGenerationTab = ({ projectId }) => {
             )}
           </div>
 
-          {/* Right Panel ÔÇö Results */}
+          {/* Right Panel — Results */}
           <div className="lg:col-span-3 space-y-6">
             {loading && (
-              <div className="card-dark rounded-2xl p-12 text-center">
+              <div className="bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-12 text-center">
                 <div className="relative w-20 h-20 mx-auto mb-6">
-                  <div className="absolute inset-0 rounded-full border-4 border-dark-700"></div>
-                  <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-violet-500 animate-spin"></div>
-                  <Sparkles className="absolute inset-0 m-auto w-8 h-8 text-violet-400 animate-pulse" />
+                  <div className="absolute inset-0 rounded-full border-4 border-slate-700/50"></div>
+                  <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin"></div>
+                  <Sparkles className="absolute inset-0 m-auto w-8 h-8 text-blue-400 animate-pulse" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">AI is generating test cases...</h3>
-                <p className="text-dark-400 text-sm">Analyzing story, applying coverage rules, and deduplicating. This can take 15-60 seconds.</p>
+                <p className="text-slate-400 text-sm">Analyzing story, applying coverage rules, and deduplicating. This can take 15-60 seconds.</p>
               </div>
             )}
 
             {suite && !loading && (
               <>
                 {/* Suite Summary */}
-                <div className="card-dark rounded-2xl p-6">
+                <div className="bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-white">
                         {suite.component || 'Test Suite'} ÔÇö {suite.total_cases} cases
                       </h3>
-                      <p className="text-sm text-dark-400 mt-1">{suite.user_story_summary}</p>
+                      <p className="text-sm text-slate-400 mt-1">{suite.user_story_summary}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {/* Run Tests Button */}
@@ -517,7 +512,7 @@ const TestGenerationTab = ({ projectId }) => {
                       <div className="relative">
                         <button
                           onClick={() => setShowExportMenu(!showExportMenu)}
-                          className="flex items-center space-x-2 px-4 py-2 bg-dark-800 hover:bg-dark-700 border border-dark-700 rounded-lg text-sm text-dark-200 hover:text-white transition-all"
+                          className="flex items-center space-x-2 px-4 py-2 bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 rounded-lg text-sm text-slate-200 hover:text-white transition-all"
                         >
                           <Download className="w-4 h-4" />
                           <span>Export</span>
@@ -598,7 +593,7 @@ const TestGenerationTab = ({ projectId }) => {
                   {/* Breakdown Badges */}
                   <div className="flex flex-wrap gap-2">
                     {Object.entries(suite.breakdown || {}).map(([type, count]) => (
-                      <span key={type} className="flex items-center space-x-1.5 px-3 py-1.5 bg-dark-800 rounded-lg text-xs font-medium text-dark-300 border border-dark-700">
+                      <span key={type} className="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800/60 rounded-lg text-xs font-medium text-slate-300 border border-slate-700/50">
                         {TYPE_ICONS[type] || <Beaker className="w-3.5 h-3.5" />}
                         <span>{TYPE_LABELS[type] || type}: {count}</span>
                       </span>
@@ -611,7 +606,7 @@ const TestGenerationTab = ({ projectId }) => {
                   {suite.test_cases?.map((tc, idx) => (
                     <div
                       key={tc.test_id || idx}
-                      className="card-dark rounded-xl overflow-hidden transition-all hover:border-dark-600"
+                      className="bg-slate-900/40 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden transition-all hover:border-slate-600/50"
                     >
                       {/* Case Header */}
                       <button
@@ -711,12 +706,12 @@ const TestGenerationTab = ({ projectId }) => {
 
             {/* Empty State */}
             {!suite && !loading && (
-              <div className="card-dark rounded-2xl p-16 text-center">
-                <div className="w-20 h-20 bg-dark-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Beaker className="w-10 h-10 text-dark-600" />
+              <div className="bg-slate-900/40 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-16 text-center">
+                <div className="w-20 h-20 bg-slate-800/60 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Beaker className="w-10 h-10 text-slate-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">No test cases yet</h3>
-                <p className="text-dark-400 text-sm max-w-md mx-auto">
+                <p className="text-slate-400 text-sm max-w-md mx-auto">
                   Enter a user story on the left and click Generate. The AI will produce comprehensive
                   test cases with happy paths, edge cases, and negative scenarios.
                 </p>
