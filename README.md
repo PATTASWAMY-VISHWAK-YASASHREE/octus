@@ -10,6 +10,7 @@ A professional AI-first project management web application with intelligent risk
 - **Visual QA**: Screenshot comparison and regression detection
 - **Test Generation**: AI-powered test case generation from user stories
 - **Release Insights**: Executive dashboards with readiness scores and analytics
+- **Dark Mode**: Professional dark theme throughout
 
 ## Tech Stack
 
@@ -41,7 +42,13 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 ```
 
-4. Start development server:
+4. Set up Firebase:
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Enable Authentication (Email/Password and Google)
+   - Create Firestore Database (start in test mode)
+   - Enable Storage
+
+5. Start development server:
 ```bash
 npm run dev
 ```
@@ -54,6 +61,7 @@ npm run dev
 ### projects/{projectId}
 - name: string
 - description: string
+- tags: string (optional)
 - ownerId: string
 - createdAt: timestamp
 
@@ -63,7 +71,7 @@ npm run dev
 - assignee: string
 - dueDate: string
 - storyPoints: number
-- status: string
+- status: string (todo, in-progress, done)
 - createdAt: timestamp
 
 ## Project Structure
@@ -103,4 +111,24 @@ npm run build
 
 ```bash
 npm run preview
+```
+
+## Firestore Security Rules
+
+Add these rules to your Firestore:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /projects/{projectId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.ownerId;
+      allow create: if request.auth != null;
+    }
+    
+    match /tasks/{taskId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
 ```

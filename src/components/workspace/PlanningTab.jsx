@@ -5,6 +5,8 @@ const PlanningTab = ({ projectId }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showRiskDrawer, setShowRiskDrawer] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [editingTask, setEditingTask] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -70,173 +72,360 @@ const PlanningTab = ({ projectId }) => {
     }
   };
 
-  const getRiskBadge = (points) => {
-    const risk = Math.min(Math.floor((points || 0) * 10), 100);
-    const color = risk > 70 ? 'bg-red-100 text-red-700' : risk > 40 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700';
-    return <span className={`px-2 py-1 rounded text-xs font-medium ${color}`}>{risk}</span>;
+  const handleTaskClick = (task) => {
+    setSelectedTask(task);
+    setShowRiskDrawer(true);
   };
 
-  if (loading) return <div className="p-8">Loading tasks...</div>;
+  const getRiskScore = (points) => Math.min(Math.floor((points || 0) * 10), 100);
+
+  const getRiskBadge = (points) => {
+    const risk = getRiskScore(points);
+    const color = risk > 70 ? 'bg-danger-500/10 text-danger-500 border-danger-500/30' : 
+                  risk > 40 ? 'bg-warning-500/10 text-warning-500 border-warning-500/30' : 
+                  'bg-success-500/10 text-success-500 border-success-500/30';
+    return <span className={`px-3 py-1 rounded-lg text-xs font-semibold border ${color}`}>{risk}</span>;
+  };
+
+  const getStatusBadge = (status) => {
+    const colors = {
+      'todo': 'bg-dark-700 text-dark-300',
+      'in-progress': 'bg-primary-500/10 text-primary-400 border border-primary-500/30',
+      'done': 'bg-success-500/10 text-success-500 border border-success-500/30'
+    };
+    const labels = {
+      'todo': 'To Do',
+      'in-progress': 'In Progress',
+      'done': 'Done'
+    };
+    return <span className={`px-3 py-1 rounded-lg text-xs font-semibold ${colors[status]}`}>{labels[status]}</span>;
+  };
+
+  const avgRisk = tasks.length > 0 ? Math.floor(tasks.reduce((acc, t) => acc + getRiskScore(t.storyPoints), 0) / tasks.length) : 0;
+  const highRiskTasks = tasks.filter(t => getRiskScore(t.storyPoints) > 70).length;
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-full">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-dark-700 border-t-primary-500 mx-auto mb-4"></div>
+        <p className="text-dark-400">Loading tasks...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="p-8">
+      {/* KPI Cards */}
       <div className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="text-sm text-gray-600 mb-1">Overall Risk Score</div>
-          <div className="text-3xl font-bold text-amber-600">63</div>
-          <div className="text-xs text-gray-500 mt-1">Moderate Risk</div>
+        <div className="card-dark rounded-2xl p-6 hover-lift">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm font-medium text-dark-400">Overall Risk Score</div>
+            <div className="w-10 h-10 bg-warning-500/10 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-warning-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+          </div>
+          <div className="text-4xl font-bold text-white mb-2">{avgRisk}</div>
+          <div className={`text-sm font-medium ${avgRisk > 70 ? 'text-danger-500' : avgRisk > 40 ? 'text-warning-500' : 'text-success-500'}`}>
+            {avgRisk > 70 ? 'High Risk' : avgRisk > 40 ? 'Moderate Risk' : 'Low Risk'}
+          </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="text-sm text-gray-600 mb-1">Predicted Delay</div>
-          <div className="text-3xl font-bold text-red-600">3 days</div>
+
+        <div className="card-dark rounded-2xl p-6 hover-lift">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm font-medium text-dark-400">Predicted Delay</div>
+            <div className="w-10 h-10 bg-danger-500/10 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-danger-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <div className="text-4xl font-bold text-danger-500 mb-2">+3</div>
+          <div className="text-sm font-medium text-dark-400">days</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="text-sm text-gray-600 mb-1">High-Risk Tasks</div>
-          <div className="text-3xl font-bold text-gray-900">{tasks.filter(t => (t.storyPoints || 0) > 5).length}</div>
+
+        <div className="card-dark rounded-2xl p-6 hover-lift">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm font-medium text-dark-400">High-Risk Tasks</div>
+            <div className="w-10 h-10 bg-danger-500/10 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-danger-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+          </div>
+          <div className="text-4xl font-bold text-white mb-2">{highRiskTasks}</div>
+          <div className="text-sm font-medium text-dark-400">tasks</div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <div className="text-sm text-gray-600 mb-1">Total Tasks</div>
-          <div className="text-3xl font-bold text-gray-900">{tasks.length}</div>
+
+        <div className="card-dark rounded-2xl p-6 hover-lift">
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm font-medium text-dark-400">Total Tasks</div>
+            <div className="w-10 h-10 bg-primary-500/10 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+          </div>
+          <div className="text-4xl font-bold text-white mb-2">{tasks.length}</div>
+          <div className="text-sm font-medium text-dark-400">active</div>
         </div>
       </div>
 
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 p-6 mb-8">
-        <div className="flex items-start space-x-3">
-          <div className="text-2xl">🤖</div>
-          <div>
-            <div className="font-semibold text-gray-900 mb-1">AI Health Summary</div>
-            <p className="text-sm text-gray-700">
-              Project is at Moderate Risk (63%). 3 tasks likely to slip. Recommended to reprioritize high-complexity items.
+      {/* AI Health Summary */}
+      <div className="bg-gradient-to-r from-primary-900/30 to-primary-800/20 border border-primary-500/30 rounded-2xl p-6 mb-8">
+        <div className="flex items-start space-x-4">
+          <div className="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg className="w-6 h-6 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-2">
+              <h3 className="text-lg font-semibold text-white">AI Project Health Summary</h3>
+              <span className="px-2 py-1 bg-primary-500/20 text-primary-400 rounded-lg text-xs font-semibold">Live Analysis</span>
+            </div>
+            <p className="text-dark-200 leading-relaxed">
+              Project is at <span className="text-warning-500 font-semibold">Moderate Risk ({avgRisk}%)</span>. 
+              {highRiskTasks > 0 && <> <span className="text-danger-500 font-semibold">{highRiskTasks} tasks</span> likely to slip.</>}
+              {' '}Recommended to reprioritize high-complexity items and review resource allocation.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Tasks</h2>
+      {/* Task Table */}
+      <div className="card-dark rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-dark-800 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-white">Tasks</h2>
+            <p className="text-sm text-dark-400 mt-1">Manage and track project tasks</p>
+          </div>
           <button
             onClick={() => {
               setEditingTask(null);
               setFormData({ name: '', assignee: '', dueDate: '', storyPoints: '', status: 'todo' });
               setShowModal(true);
             }}
-            className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700"
+            className="bg-gradient-to-r from-primary-600 to-primary-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/20 flex items-center space-x-2"
           >
-            + Add Task
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Add Task</span>
           </button>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-dark-900 border-b border-dark-800">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Task Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assignee</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Risk</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Task Name</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Assignee</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Due Date</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Points</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Risk</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-dark-800">
               {tasks.map((task) => (
-                <tr key={task.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-900">{task.name}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{task.assignee}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{task.dueDate}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{task.storyPoints}</td>
-                  <td className="px-6 py-4">{getRiskBadge(task.storyPoints)}</td>
+                <tr key={task.id} className="hover:bg-dark-900/50 transition-colors cursor-pointer" onClick={() => handleTaskClick(task)}>
+                  <td className="px-6 py-4 text-sm font-medium text-white">{task.name}</td>
                   <td className="px-6 py-4">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
-                      {task.status}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
+                        {task.assignee?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <span className="text-sm text-dark-300">{task.assignee || 'Unassigned'}</span>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-sm space-x-2">
-                    <button onClick={() => handleEdit(task)} className="text-primary-600 hover:text-primary-700">Edit</button>
-                    <button onClick={() => handleDelete(task.id)} className="text-red-600 hover:text-red-700">Delete</button>
+                  <td className="px-6 py-4 text-sm text-dark-300">{task.dueDate || '-'}</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-white">{task.storyPoints || 0}</td>
+                  <td className="px-6 py-4">{getRiskBadge(task.storyPoints)}</td>
+                  <td className="px-6 py-4">{getStatusBadge(task.status)}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                      <button onClick={() => handleEdit(task)} className="text-primary-400 hover:text-primary-300 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button onClick={() => handleDelete(task.id)} className="text-danger-500 hover:text-danger-400 transition-colors">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {tasks.length === 0 && (
-            <div className="text-center py-12 text-gray-500">No tasks yet. Add your first task to get started.</div>
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-dark-900 rounded-2xl mb-4">
+                <svg className="w-8 h-8 text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <p className="text-dark-400 text-lg">No tasks yet</p>
+              <p className="text-dark-500 text-sm mt-1">Add your first task to get started</p>
+            </div>
           )}
         </div>
       </div>
 
+      {/* Task Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full mx-4">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">{editingTask ? 'Edit Task' : 'Create Task'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div className="card-dark rounded-2xl shadow-2xl p-8 max-w-lg w-full animate-slide-up">
+            <h2 className="text-2xl font-bold text-white mb-6">{editingTask ? 'Edit Task' : 'Create Task'}</h2>
+            <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Task Name</label>
+                <label className="block text-sm font-medium text-dark-200 mb-2">Task Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  placeholder="Implement user authentication"
+                  style={{ 
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    caretColor: '#ffffff'
+                  }}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Assignee</label>
+                <label className="block text-sm font-medium text-dark-200 mb-2">Assignee</label>
                 <input
                   type="text"
                   value={formData.assignee}
                   onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  placeholder="John Doe"
+                  style={{ 
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    caretColor: '#ffffff'
+                  }}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                <input
-                  type="date"
-                  value={formData.dueDate}
-                  onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-dark-200 mb-2">Due Date</label>
+                  <input
+                    type="date"
+                    value={formData.dueDate}
+                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                    className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                    style={{ 
+                      color: '#ffffff',
+                      WebkitTextFillColor: '#ffffff',
+                      caretColor: '#ffffff',
+                      colorScheme: 'dark'
+                    }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-dark-200 mb-2">Story Points</label>
+                  <input
+                    type="number"
+                    value={formData.storyPoints}
+                    onChange={(e) => setFormData({ ...formData, storyPoints: e.target.value })}
+                    className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                    placeholder="5"
+                    style={{ 
+                      color: '#ffffff',
+                      WebkitTextFillColor: '#ffffff',
+                      caretColor: '#ffffff'
+                    }}
+                  />
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Story Points</label>
-                <input
-                  type="number"
-                  value={formData.storyPoints}
-                  onChange={(e) => setFormData({ ...formData, storyPoints: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-dark-200 mb-2">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  style={{ 
+                    color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff'
+                  }}
                 >
-                  <option value="todo">To Do</option>
-                  <option value="in-progress">In Progress</option>
-                  <option value="done">Done</option>
+                  <option value="todo" style={{ backgroundColor: '#1e293b', color: '#ffffff' }}>To Do</option>
+                  <option value="in-progress" style={{ backgroundColor: '#1e293b', color: '#ffffff' }}>In Progress</option>
+                  <option value="done" style={{ backgroundColor: '#1e293b', color: '#ffffff' }}>Done</option>
                 </select>
               </div>
               <div className="flex space-x-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-3 border border-dark-700 rounded-xl text-dark-300 hover:bg-dark-800 hover:text-white transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/20 font-semibold"
                 >
                   {editingTask ? 'Update' : 'Create'}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Risk Breakdown Drawer */}
+      {showRiskDrawer && selectedTask && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-end z-50" onClick={() => setShowRiskDrawer(false)}>
+          <div className="w-full max-w-md h-full bg-dark-900 shadow-2xl p-8 overflow-y-auto animate-slide-left" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Risk Breakdown</h2>
+              <button onClick={() => setShowRiskDrawer(false)} className="text-dark-400 hover:text-white transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="card-dark rounded-xl p-6 mb-6">
+              <h3 className="font-semibold text-white mb-2">{selectedTask.name}</h3>
+              <p className="text-sm text-dark-400">Assigned to: {selectedTask.assignee || 'Unassigned'}</p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                { label: 'Deadline Proximity', value: 25, color: 'warning' },
+                { label: 'Complexity', value: 20, color: 'danger' },
+                { label: 'Dependency Risk', value: 30, color: 'danger' },
+                { label: 'Assignee Overload', value: 15, color: 'warning' }
+              ].map((factor, idx) => (
+                <div key={idx}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-dark-200">{factor.label}</span>
+                    <span className={`text-sm font-bold text-${factor.color}-500`}>+{factor.value}</span>
+                  </div>
+                  <div className="w-full bg-dark-800 rounded-full h-2">
+                    <div 
+                      className={`bg-${factor.color}-500 h-2 rounded-full transition-all`}
+                      style={{ width: `${factor.value}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 p-6 bg-gradient-to-r from-danger-900/30 to-danger-800/20 border border-danger-500/30 rounded-xl">
+              <div className="text-sm font-medium text-dark-300 mb-2">Total Risk Score</div>
+              <div className="text-5xl font-bold text-danger-500">{getRiskScore(selectedTask.storyPoints)}/100</div>
+            </div>
           </div>
         </div>
       )}

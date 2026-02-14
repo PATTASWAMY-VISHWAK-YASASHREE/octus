@@ -5,6 +5,7 @@ import {
   query, 
   where,
   doc,
+  getDoc,
   updateDoc,
   deleteDoc,
   serverTimestamp
@@ -33,6 +34,19 @@ export const getProjectTasks = async (projectId) => {
     }));
   } catch (error) {
     throw new Error('Failed to fetch tasks: ' + error.message);
+  }
+};
+
+export const getTaskById = async (taskId) => {
+  try {
+    const docRef = doc(db, 'tasks', taskId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    }
+    return null;
+  } catch (error) {
+    throw new Error('Failed to fetch task: ' + error.message);
   }
 };
 
