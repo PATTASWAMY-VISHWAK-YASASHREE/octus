@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import * as XLSX from 'xlsx';
+import { formatDateForBackend } from '../../utils/dateUtils.js';
 
 const DataImportModal = ({ onClose, onImport, projectId }) => {
   const [importMethod, setImportMethod] = useState('manual'); // manual, csv, excel
@@ -25,7 +26,7 @@ const DataImportModal = ({ onClose, onImport, projectId }) => {
         const tasks = jsonData.map((row, index) => ({
           name: row.name || row.task || row.Task || row.Name || `Task ${index + 1}`,
           assignee: row.assignee || row.Assignee || '',
-          dueDate: row.dueDate || row['Due Date'] || '',
+          dueDate: formatDateForBackend(row.dueDate || row['Due Date'] || row['due date'] || ''),
           storyPoints: row.storyPoints || row.points || row.Points || 0,
           status: row.status || row.Status || 'todo',
           projectId

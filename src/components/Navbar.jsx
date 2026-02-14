@@ -1,8 +1,9 @@
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { LogOut, ArrowLeft } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({ showBackButton = false, backTo = '/dashboard', pageTitle = 'Dashboard' }) => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -17,50 +18,64 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-dark-900 border-b border-dark-800 px-6 py-4 sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
-      <div className="flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center space-x-8">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-              </svg>
-            </div>
-            <h1 className="text-xl font-bold text-white">AI Project Manager</h1>
-          </div>
+    <nav className="bg-black/80 backdrop-blur-xl border-b border-gray-800/50 px-4 md:px-6 py-3 sticky top-0 z-50">
+      <div className="flex items-center justify-between w-full">
+        {/* Left side - Back button + Logo + Page title */}
+        <div className="flex items-center space-x-3">
+          {showBackButton && (
+            <button
+              onClick={() => navigate(backTo)}
+              className="flex items-center space-x-1.5 px-2.5 py-1.5 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 rounded-lg text-slate-300 hover:text-white transition-all"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span className="text-sm font-medium hidden sm:inline">Back</span>
+            </button>
+          )}
+          <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">Octus</h1>
+          <span className="px-2 py-1 bg-gray-800/50 border border-gray-700/50 rounded text-xs text-gray-400 font-medium hidden sm:inline-block">
+            {pageTitle}
+          </span>
         </div>
         
-        <div className="flex items-center space-x-4">
+        {/* Right side - User menu */}
+        
+        <div className="flex items-center space-x-2 md:space-x-4">
           <div className="relative">
             <button 
               onClick={() => setShowDropdown(!showDropdown)}
-              className="flex items-center space-x-3 hover:bg-dark-800 rounded-xl px-3 py-2 transition-colors"
+              className="flex items-center space-x-2 md:space-x-3 hover:bg-gray-900/50 rounded-xl px-2 md:px-3 py-2 transition-all duration-300 border border-transparent hover:border-gray-800"
             >
-              <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center text-white font-semibold shadow-lg">
+              <div className="w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center text-white font-semibold text-sm shadow-lg">
                 {currentUser?.email?.[0]?.toUpperCase()}
               </div>
-              <div className="text-left hidden md:block">
+              <div className="text-left hidden lg:block">
                 <div className="text-sm font-medium text-white">{currentUser?.email?.split('@')[0]}</div>
-                <div className="text-xs text-dark-400">Online</div>
+                <div className="text-xs text-gray-500">Online</div>
               </div>
-              <svg className={`w-4 h-4 text-dark-400 transition-transform ${showDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className={`w-4 h-4 text-gray-400 transition-transform hidden md:block ${showDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
             
             {showDropdown && (
-              <div className="absolute right-0 mt-2 w-56 card-dark rounded-xl shadow-2xl overflow-hidden animate-slide-up">
-                <div className="px-4 py-3 border-b border-dark-700">
-                  <p className="text-sm font-medium text-white">{currentUser?.email}</p>
-                  <p className="text-xs text-dark-400 mt-1">Project Manager</p>
+              <div className="absolute right-0 mt-2 w-64 bg-gray-900/95 backdrop-blur-xl border border-gray-800 rounded-xl shadow-2xl overflow-hidden">
+                <div className="px-4 py-4 border-b border-gray-800">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <div className="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center text-white font-semibold">
+                      {currentUser?.email?.[0]?.toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{currentUser?.email?.split('@')[0]}</p>
+                      <p className="text-xs text-gray-500">Project Manager</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400 truncate">{currentUser?.email}</p>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full text-left px-4 py-3 text-sm text-danger-500 hover:bg-dark-800 transition-colors flex items-center space-x-2"
+                  className="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-gray-800/50 transition-colors flex items-center space-x-2"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
+                  <LogOut className="w-4 h-4" />
                   <span>Logout</span>
                 </button>
               </div>

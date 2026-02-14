@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getProjectTasks, createTask, updateTask, deleteTask } from '../../services/taskService';
 import DataImportModal from '../DataImportModal';
 import ColumnManager from './ColumnManager';
+import { formatDateForInput, formatDateForDisplay } from '../../utils/dateUtils.js';
 
 const PlanningTab = ({ projectId }) => {
   const navigate = useNavigate();
@@ -163,7 +164,7 @@ const PlanningTab = ({ projectId }) => {
             onChange={(e) => setEditValue(e.target.value)}
             onBlur={() => saveInlineEdit(task.id)}
             autoFocus
-            className="px-2 py-1 bg-dark-800 border-2 border-primary-500 rounded text-white focus:outline-none"
+            className="px-2 py-1 bg-slate-800 border-2 border-slate-600 rounded text-white focus:outline-none"
             style={{ color: '#ffffff', WebkitTextFillColor: '#ffffff' }}
           >
             <option value="todo" style={{ backgroundColor: '#1e293b', color: '#ffffff' }}>To Do</option>
@@ -177,12 +178,14 @@ const PlanningTab = ({ projectId }) => {
 
     if (column.id === 'assignee' && !isEditing) {
       return (
-        <div className="flex items-center space-x-2 hover:text-primary-400 transition-colors">
-          <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center text-white text-xs font-semibold">
-            {value?.[0]?.toUpperCase() || '?'}
-          </div>
-          <span className="text-sm text-dark-300">{value || 'Unassigned'}</span>
-        </div>
+        <span className="text-sm text-slate-200">{value || 'Unassigned'}</span>
+      );
+    }
+
+    // Handle date display
+    if (column.id === 'dueDate' && !isEditing) {
+      return (
+        <span className="text-sm text-slate-200">{formatDateForDisplay(value)}</span>
       );
     }
 
@@ -191,17 +194,20 @@ const PlanningTab = ({ projectId }) => {
                        column.type === 'date' ? 'date' : 
                        column.type === 'percentage' ? 'number' : 'text';
       
+      // Format date value for input field
+      const inputValue = column.type === 'date' ? formatDateForInput(editValue) : editValue;
+      
       return (
         <input
           type={inputType}
-          value={editValue}
+          value={inputValue}
           onChange={(e) => setEditValue(e.target.value)}
           onBlur={() => saveInlineEdit(task.id)}
           onKeyDown={(e) => handleKeyPress(e, task.id)}
           autoFocus
           min={column.type === 'percentage' ? 0 : undefined}
           max={column.type === 'percentage' ? 100 : undefined}
-          className="w-full px-2 py-1 bg-dark-800 border-2 border-primary-500 rounded text-white focus:outline-none"
+          className="w-full px-2 py-1 bg-slate-800 border-2 border-slate-600 rounded text-white focus:outline-none"
           style={{ 
             color: '#ffffff',
             WebkitTextFillColor: '#ffffff',
@@ -213,7 +219,7 @@ const PlanningTab = ({ projectId }) => {
     }
 
     const displayValue = column.type === 'percentage' && value ? `${value}%` : value || '-';
-    return <span className="hover:text-primary-400 transition-colors">{displayValue}</span>;
+    return <span className="hover:text-slate-400 transition-colors">{displayValue}</span>;
   };
 
   const handleTaskClick = (task) => {
@@ -233,8 +239,8 @@ const PlanningTab = ({ projectId }) => {
 
   const getStatusBadge = (status) => {
     const colors = {
-      'todo': 'bg-dark-700 text-dark-300',
-      'in-progress': 'bg-primary-500/10 text-primary-400 border border-primary-500/30',
+      'todo': 'bg-dark-700 text-slate-300',
+      'in-progress': 'bg-slate-500/10 text-slate-400 border border-slate-600/30',
       'done': 'bg-success-500/10 text-success-500 border border-success-500/30'
     };
     const labels = {
@@ -268,8 +274,8 @@ const PlanningTab = ({ projectId }) => {
   if (loading) return (
     <div className="flex items-center justify-center h-full">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-dark-700 border-t-primary-500 mx-auto mb-4"></div>
-        <p className="text-dark-400">Loading tasks...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-slate-700 border-t-slate-500 mx-auto mb-4"></div>
+        <p className="text-slate-400">Loading tasks...</p>
       </div>
     </div>
   );
@@ -278,9 +284,9 @@ const PlanningTab = ({ projectId }) => {
     <div className="p-8">
       {/* KPI Cards */}
       <div className="grid grid-cols-5 gap-6 mb-8">
-        <div className="card-dark rounded-2xl p-6 hover-lift">
+        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover-lift">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-sm font-medium text-dark-400">Overall Risk Score</div>
+            <div className="text-sm font-medium text-slate-400">Overall Risk Score</div>
             <div className="w-10 h-10 bg-warning-500/10 rounded-xl flex items-center justify-center">
               <svg className="w-5 h-5 text-warning-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -293,24 +299,24 @@ const PlanningTab = ({ projectId }) => {
           </div>
         </div>
 
-        <div className="card-dark rounded-2xl p-6 hover-lift">
+        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover-lift">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-sm font-medium text-dark-400">Team Velocity</div>
-            <div className="w-10 h-10 bg-primary-500/10 rounded-xl flex items-center justify-center">
-              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-sm font-medium text-slate-400">Team Velocity</div>
+            <div className="w-10 h-10 bg-slate-500/10 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
             </div>
           </div>
-          <div className="text-4xl font-bold text-primary-500 mb-2">{completedStoryPoints}</div>
-          <div className="text-sm font-medium text-dark-400">
+          <div className="text-4xl font-bold text-slate-200 mb-2">{completedStoryPoints}</div>
+          <div className="text-sm font-medium text-slate-400">
             of {totalStoryPoints} points ({velocityPercentage}%)
           </div>
         </div>
 
-        <div className="card-dark rounded-2xl p-6 hover-lift">
+        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover-lift">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-sm font-medium text-dark-400">Predicted Delay</div>
+            <div className="text-sm font-medium text-slate-400">Predicted Delay</div>
             <div className="w-10 h-10 bg-danger-500/10 rounded-xl flex items-center justify-center">
               <svg className="w-5 h-5 text-danger-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -318,12 +324,12 @@ const PlanningTab = ({ projectId }) => {
             </div>
           </div>
           <div className="text-4xl font-bold text-danger-500 mb-2">+{predictedDelay}</div>
-          <div className="text-sm font-medium text-dark-400">days</div>
+          <div className="text-sm font-medium text-slate-400">days</div>
         </div>
 
-        <div className="card-dark rounded-2xl p-6 hover-lift">
+        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover-lift">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-sm font-medium text-dark-400">High-Risk Tasks</div>
+            <div className="text-sm font-medium text-slate-400">High-Risk Tasks</div>
             <div className="w-10 h-10 bg-danger-500/10 rounded-xl flex items-center justify-center">
               <svg className="w-5 h-5 text-danger-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -331,37 +337,37 @@ const PlanningTab = ({ projectId }) => {
             </div>
           </div>
           <div className="text-4xl font-bold text-white mb-2">{highRiskTasks}</div>
-          <div className="text-sm font-medium text-dark-400">tasks</div>
+          <div className="text-sm font-medium text-slate-400">tasks</div>
         </div>
 
-        <div className="card-dark rounded-2xl p-6 hover-lift">
+        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover-lift">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-sm font-medium text-dark-400">Total Tasks</div>
-            <div className="w-10 h-10 bg-primary-500/10 rounded-xl flex items-center justify-center">
-              <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-sm font-medium text-slate-400">Total Tasks</div>
+            <div className="w-10 h-10 bg-slate-500/10 rounded-xl flex items-center justify-center">
+              <svg className="w-5 h-5 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
           </div>
           <div className="text-4xl font-bold text-white mb-2">{totalTasks}</div>
-          <div className="text-sm font-medium text-dark-400">active</div>
+          <div className="text-sm font-medium text-slate-400">active</div>
         </div>
       </div>
 
       {/* AI Health Summary */}
-      <div className="bg-gradient-to-r from-primary-900/30 to-primary-800/20 border border-primary-500/30 rounded-2xl p-6 mb-8">
+      <div className="bg-gradient-to-r from-slate-900/40 to-slate-800/20 border border-slate-600/30 rounded-2xl p-6 mb-8">
         <div className="flex items-start space-x-4">
-          <div className="w-12 h-12 bg-primary-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-12 h-12 bg-slate-800/30 rounded-xl flex items-center justify-center flex-shrink-0">
+            <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
           </div>
           <div className="flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <h3 className="text-lg font-semibold text-white">AI Project Health Summary</h3>
-              <span className="px-2 py-1 bg-primary-500/20 text-primary-400 rounded-lg text-xs font-semibold">Live Analysis</span>
+              <span className="px-2 py-1 bg-slate-800/30 text-slate-400 rounded-lg text-xs font-semibold">Live Analysis</span>
             </div>
-            <p className="text-dark-200 leading-relaxed">
+            <p className="text-slate-200 leading-relaxed">
               {totalTasks === 0 ? (
                 'No tasks yet. Add tasks to get AI-powered insights and recommendations.'
               ) : (
@@ -369,11 +375,11 @@ const PlanningTab = ({ projectId }) => {
                   Project is at <span className={`font-semibold ${avgRisk > 70 ? 'text-danger-500' : avgRisk > 40 ? 'text-warning-500' : 'text-success-500'}`}>
                     {avgRisk > 70 ? 'High' : avgRisk > 40 ? 'Moderate' : 'Low'} Risk ({avgRisk}%)
                   </span>.
-                  {' '}Team velocity: <span className="text-primary-400 font-semibold">{completedStoryPoints}/{totalStoryPoints} points</span> completed ({velocityPercentage}%).
+                  {' '}Team velocity: <span className="text-slate-400 font-semibold">{completedStoryPoints}/{totalStoryPoints} points</span> completed ({velocityPercentage}%).
                   {highRiskTasks > 0 && <> <span className="text-danger-500 font-semibold">{highRiskTasks} tasks</span> likely to slip.</>}
                   {' '}
                   {completedTasks > 0 && <span className="text-success-500 font-semibold">{completedTasks} completed</span>}
-                  {inProgressTasks > 0 && <>, <span className="text-primary-400 font-semibold">{inProgressTasks} in progress</span></>}.
+                  {inProgressTasks > 0 && <>, <span className="text-slate-400 font-semibold">{inProgressTasks} in progress</span></>}.
                   {highRiskTasks > 2 && ' Recommended to reprioritize high-complexity items and review resource allocation.'}
                 </>
               )}
@@ -383,16 +389,16 @@ const PlanningTab = ({ projectId }) => {
       </div>
 
       {/* Task Table */}
-      <div className="card-dark rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-dark-800 flex items-center justify-between">
+      <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-white">Tasks</h2>
-            <p className="text-sm text-dark-400 mt-1">Manage and track project tasks</p>
+            <p className="text-sm text-slate-400 mt-1">Manage and track project tasks</p>
           </div>
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setShowColumnManager(true)}
-              className="bg-dark-800 border border-dark-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-dark-700 transition-all flex items-center space-x-2"
+              className="bg-slate-800 border border-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-dark-700 transition-all flex items-center space-x-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -401,7 +407,7 @@ const PlanningTab = ({ projectId }) => {
             </button>
             <button
               onClick={() => navigate(`/project/${projectId}/ai-analysis`)}
-              className="bg-gradient-to-r from-warning-600 to-warning-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-warning-500 hover:to-warning-600 transition-all shadow-lg shadow-warning-500/20 flex items-center space-x-2"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-blue-500 hover:to-blue-600 transition-all shadow-lg shadow-blue-900/50 flex items-center space-x-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -410,7 +416,7 @@ const PlanningTab = ({ projectId }) => {
             </button>
             <button
               onClick={() => setShowImportModal(true)}
-              className="bg-dark-800 border border-dark-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-dark-700 transition-all flex items-center space-x-2"
+              className="bg-slate-800 border border-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-dark-700 transition-all flex items-center space-x-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -423,7 +429,7 @@ const PlanningTab = ({ projectId }) => {
                 setFormData({ name: '', assignee: '', dueDate: '', storyPoints: '', status: 'todo' });
                 setShowModal(true);
               }}
-              className="bg-gradient-to-r from-primary-600 to-primary-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/20 flex items-center space-x-2"
+              className="bg-gradient-to-r from-slate-600 to-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:from-slate-500 hover:to-slate-600 transition-all shadow-lg shadow-slate-900/30 flex items-center space-x-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -435,26 +441,26 @@ const PlanningTab = ({ projectId }) => {
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-dark-900 border-b border-dark-800">
+            <thead className="bg-slate-900 border-b border-slate-800">
               <tr>
                 {columns.filter(col => !col.hidden).map((column) => (
-                  <th key={column.id} className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">
+                  <th key={column.id} className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {column.label}
                   </th>
                 ))}
-                <th className="px-6 py-4 text-left text-xs font-semibold text-dark-400 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-dark-800">
               {tasks.map((task) => (
-                <tr key={task.id} className="hover:bg-dark-900/50 transition-colors">
+                <tr key={task.id} className="hover:bg-slate-900/50 transition-colors">
                   {columns.filter(col => !col.hidden).map((column) => (
                     <td
                       key={column.id}
                       className={`px-6 py-4 text-sm ${column.editable ? 'cursor-pointer' : ''} ${
                         column.id === 'name' ? 'font-medium text-white' : 
                         column.id === 'storyPoints' ? 'font-semibold text-white' : 
-                        'text-dark-300'
+                        'text-slate-300'
                       }`}
                       onClick={() => column.editable && editingCell?.taskId !== task.id && startEditing(task.id, column.id, task[column.id])}
                     >
@@ -465,7 +471,7 @@ const PlanningTab = ({ projectId }) => {
                     <div className="flex items-center space-x-2">
                       <button 
                         onClick={() => handleTaskClick(task)} 
-                        className="text-primary-400 hover:text-primary-300 transition-colors"
+                        className="text-slate-400 hover:text-primary-300 transition-colors"
                         title="View Risk Details"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -490,12 +496,12 @@ const PlanningTab = ({ projectId }) => {
           </table>
           {tasks.length === 0 && (
             <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-dark-900 rounded-2xl mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-900 rounded-2xl mb-4">
                 <svg className="w-8 h-8 text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <p className="text-dark-400 text-lg">No tasks yet</p>
+              <p className="text-slate-400 text-lg">No tasks yet</p>
               <p className="text-dark-500 text-sm mt-1">Add your first task or import from CSV to get started</p>
               <button
                 onClick={() => setShowImportModal(true)}
@@ -511,17 +517,17 @@ const PlanningTab = ({ projectId }) => {
       {/* Task Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="card-dark rounded-2xl shadow-2xl p-8 max-w-lg w-full animate-slide-up">
+          <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-2xl p-8 max-w-lg w-full animate-slide-up">
             <h2 className="text-2xl font-bold text-white mb-6">{editingTask ? 'Edit Task' : 'Create Task'}</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-dark-200 mb-2">Task Name</label>
+                <label className="block text-sm font-medium text-slate-200 mb-2">Task Name</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   required
-                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-slate-600 transition-all"
                   placeholder="Implement user authentication"
                   style={{ 
                     color: '#ffffff',
@@ -531,12 +537,12 @@ const PlanningTab = ({ projectId }) => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-dark-200 mb-2">Assignee</label>
+                <label className="block text-sm font-medium text-slate-200 mb-2">Assignee</label>
                 <input
                   type="text"
                   value={formData.assignee}
                   onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
-                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-slate-600 transition-all"
                   placeholder="John Doe"
                   style={{ 
                     color: '#ffffff',
@@ -547,12 +553,12 @@ const PlanningTab = ({ projectId }) => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-dark-200 mb-2">Due Date</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Due Date</label>
                   <input
                     type="date"
-                    value={formData.dueDate}
+                    value={formatDateForInput(formData.dueDate)}
                     onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                    className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-slate-600 transition-all"
                     style={{ 
                       color: '#ffffff',
                       WebkitTextFillColor: '#ffffff',
@@ -562,12 +568,12 @@ const PlanningTab = ({ projectId }) => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-dark-200 mb-2">Story Points</label>
+                  <label className="block text-sm font-medium text-slate-200 mb-2">Story Points</label>
                   <input
                     type="number"
                     value={formData.storyPoints}
                     onChange={(e) => setFormData({ ...formData, storyPoints: e.target.value })}
-                    className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                    className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl placeholder-dark-500 focus:ring-2 focus:ring-primary-500 focus:border-slate-600 transition-all"
                     placeholder="5"
                     style={{ 
                       color: '#ffffff',
@@ -578,11 +584,11 @@ const PlanningTab = ({ projectId }) => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-dark-200 mb-2">Status</label>
+                <label className="block text-sm font-medium text-slate-200 mb-2">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-4 py-3 bg-dark-800 border-2 border-dark-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"
+                  className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-slate-600 transition-all"
                   style={{ 
                     color: '#ffffff',
                     WebkitTextFillColor: '#ffffff'
@@ -597,13 +603,13 @@ const PlanningTab = ({ projectId }) => {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-3 border border-dark-700 rounded-xl text-dark-300 hover:bg-dark-800 hover:text-white transition-all"
+                  className="flex-1 px-4 py-3 border border-slate-700 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl hover:from-primary-500 hover:to-primary-600 transition-all shadow-lg shadow-primary-500/20 font-semibold"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-xl hover:from-slate-500 hover:to-slate-600 transition-all shadow-lg shadow-slate-900/30 font-semibold"
                 >
                   {editingTask ? 'Update' : 'Create'}
                 </button>
@@ -616,47 +622,47 @@ const PlanningTab = ({ projectId }) => {
       {/* Risk Breakdown Drawer */}
       {showRiskDrawer && selectedTask && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-end z-50" onClick={() => setShowRiskDrawer(false)}>
-          <div className="w-full max-w-md h-full bg-dark-900 shadow-2xl p-8 overflow-y-auto animate-slide-left" onClick={(e) => e.stopPropagation()}>
+          <div className="w-full max-w-md h-full bg-slate-900 shadow-2xl p-8 overflow-y-auto animate-slide-left" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">Risk Breakdown</h2>
-              <button onClick={() => setShowRiskDrawer(false)} className="text-dark-400 hover:text-white transition-colors">
+              <button onClick={() => setShowRiskDrawer(false)} className="text-slate-400 hover:text-white transition-colors">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <div className="card-dark rounded-xl p-6 mb-6">
+            <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 mb-6">
               <h3 className="font-semibold text-white mb-2">{selectedTask.name}</h3>
-              <p className="text-sm text-dark-400">Assigned to: {selectedTask.assignee || 'Unassigned'}</p>
+              <p className="text-sm text-slate-400">Assigned to: {selectedTask.assignee || 'Unassigned'}</p>
             </div>
 
       <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="card-dark rounded-xl p-6">
+        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-white">Current State</h3>
           </div>
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-dark-300">Assignee:</span>
+              <span className="text-slate-300">Assignee:</span>
               <span className="text-white font-medium">{selectedTask.assignee || 'Unassigned'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-dark-300">Story Points:</span>
+              <span className="text-slate-300">Story Points:</span>
               <span className="text-white font-medium">{selectedTask.storyPoints || 0}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-dark-300">Due Date:</span>
-              <span className="text-white font-medium">{selectedTask.dueDate || 'Not set'}</span>
+              <span className="text-slate-300">Due Date:</span>
+              <span className="text-white font-medium">{formatDateForDisplay(selectedTask.dueDate)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-dark-300">Status:</span>
+              <span className="text-slate-300">Status:</span>
               <span className="text-white font-medium capitalize">{selectedTask.status?.replace('-', ' ') || 'To Do'}</span>
             </div>
           </div>
         </div>
 
-        <div className="card-dark rounded-xl p-6">
+        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-white">Risk Analysis</h3>
           </div>
@@ -668,10 +674,10 @@ const PlanningTab = ({ projectId }) => {
             ].map((factor, idx) => (
               <div key={idx}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-dark-200">{factor.label}</span>
+                  <span className="text-sm font-medium text-slate-200">{factor.label}</span>
                   <span className={`text-sm font-bold text-${factor.color}-500`}>+{factor.value}</span>
                 </div>
-                <div className="w-full bg-dark-800 rounded-full h-2">
+                <div className="w-full bg-slate-800 rounded-full h-2">
                   <div 
                     className={`bg-${factor.color}-500 h-2 rounded-full transition-all`}
                     style={{ width: `${factor.value}%` }}
@@ -684,9 +690,9 @@ const PlanningTab = ({ projectId }) => {
       </div>
 
       <div className="p-6 bg-gradient-to-r from-danger-900/30 to-danger-800/20 border border-danger-500/30 rounded-xl">
-        <div className="text-sm font-medium text-dark-300 mb-2">Total Risk Score</div>
+        <div className="text-sm font-medium text-slate-300 mb-2">Total Risk Score</div>
         <div className="text-5xl font-bold text-danger-500">{getRiskScore(selectedTask.storyPoints)}/100</div>
-        <p className="text-sm text-dark-400 mt-2">
+        <p className="text-sm text-slate-400 mt-2">
           Based on complexity, timeline, and resource allocation analysis
         </p>
       </div>
@@ -716,3 +722,8 @@ const PlanningTab = ({ projectId }) => {
 };
 
 export default PlanningTab;
+
+
+
+
+
