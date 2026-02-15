@@ -49,22 +49,69 @@ graph TD
 ## ⚡ Tech Stack
 
 ```mermaid
-mindmap
-  root((Octus))
-    Frontend
-      React 18
-      Vite
-      TailwindCSS
-    Backend
-      FastAPI
-      Python 3.10
-    AI Core
-      Google Gemini Pro
-      OpenCV
-    Data
-      Firebase Firestore
-      Cloudinary
+graph TD
+    subgraph Frontend
+        React[React 18]
+        Vite[Vite]
+        TW[TailwindCSS]
+    end
+    
+    subgraph Backend
+        Fast[FastAPI]
+        Py[Python 3.10]
+    end
+    
+    subgraph AI_Data
+        Gem[Google Gemini Pro]
+        CV[OpenCV]
+        FB[Firebase]
+        Cloud[Cloudinary]
+    end
+
+    React --> Fast
+    Fast --> Gem
+    Fast --> FB
 ```
+
+---
+
+## 🔄 The Agentic Loop
+**Autonomous Self-Correction, Not Just Automation.**
+
+Octus operates on a continuous **Agentic Loop** that mimics a senior engineer's thought process. It doesn't just execute tasks; it verifies the output and visualizes the result before considering the job done.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Perception
+    
+    state "👀 Perception" as Perception
+    Perception --> Analysis : User Input / GitHub Event
+    
+    state "🧠 Analysis & Planning" as Analysis
+    Analysis --> Execution : Plan Formulated
+    
+    state "⚡ Execution" as Execution
+    Execution --> Verification : Code/Test Generated
+    
+    state "✅ Verification" as Verification
+    Verification --> Success : Tests Pass / UI Valid
+    Verification --> Correction : Failure Detected
+    
+    state "🛠️ Self-Correction" as Correction
+    Correction --> Execution : Refined Prompt/Context
+    
+    Success --> [*]
+```
+
+### How the Loop Works
+1.  **Perception**: The agent listens for User Stories, GitHub Push events, or Figma design updates.
+2.  **Analysis**: using Gemini Pro, it breaks down the requirement into technical steps (e.g., "Create Login Component", "Add Auth Service").
+3.  **Execution**: It generates the code, test cases, or risk analysis report.
+4.  **Verification**:
+    *   *For Tests*: It creates the tests.
+    *   *For UI*: It compares the developed UI against the design using Computer Vision.
+5.  **Self-Correction**: If the verification fails (e.g., UI mismatch > 5%), the agent analyzes the diff and suggests a fix loop.
+
 
 ---
 
