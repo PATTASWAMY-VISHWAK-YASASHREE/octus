@@ -212,6 +212,30 @@ Uses Gemini Vision and OpenCV to perform pixel-level comparisons between your lo
 | **OUTPUT** | Visual diff overlay, element shift report, layout anomaly detection. |
 | **ARCH** | React Upload → OpenCV Processing → Gemini Multimodal Analysis → Annotated Diff Image. |
 
+```mermaid
+graph TD
+    subgraph Client
+        UI[⚛️ React Upload]
+    end
+    
+    subgraph Server
+        API[⚡ FastAPI]
+        Pre[🖼️ Pillow Pre-process]
+        Gem[✨ Gemini Vision]
+        CV[👁️ OpenCV Diff]
+        Store[(🔥 Firestore / GCS)]
+    end
+
+    UI -->|Images| API
+    API --> Pre
+    Pre -->|Base64| Gem
+    Gem -->|Analysis JSON| CV
+    Pre -->|Raw Images| CV
+    CV -->|Annotated Image| Store
+    Store -->|URL| API
+    API -->|Report| UI
+```
+
 ### 4. End-to-End Quality Insights
 **The "Go/No-Go" decision, automlated.**
 Aggregates data from all three other modules to compute a holistic **Release Readiness Score**. A Gemini NLP analytics layer ingests defect counts, test pass rates, and visual regression scores to identify trend lines and recurring failure hotspots. It emits a plain-English release recommendation so engineering leads can make data-driven decisions.
