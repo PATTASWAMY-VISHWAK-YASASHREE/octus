@@ -96,11 +96,22 @@ graph TD
     style S fill:#1abc9c,stroke:#16a085,stroke-width:2px,color:white
 ```
 
+### 🧠 Architecture Pattern: The Agentic Loop
+**Octus implements "Pattern B" for autonomous reasoning.**
+
+| Agent Component | Octus Implementation |
+| :--- | :--- |
+| **Planner** | `Analysis & Planning` (Gemini) breaks down user stories into atomic tasks. |
+| **Executor** | `Code Gen` & `Test Runner` execute the planned steps. |
+| **Tools** | `GitHub API` (Context Retrieval), `Vision API` (UI Analysis), `Cloudinary` (Asset Mgmt). |
+| **Evaluator** | `Visual Verification Engine` compares output against design specs. |
+| **Memory** | `Firestore` stores conversation history and project context. |
+
 ### How the Loop Works
 1.  **Perception**: The agent listens for User Stories, GitHub Push events, or Figma design updates.
-2.  **Analysis**: Using Gemini Pro, it breaks down the requirement into technical steps.
-3.  **Execution**: It generates the code, test cases, or risk analysis report.
-4.  **Verification**: It validates the output (Simulated User Testing or Visual Compare).
+2.  **Analysis (Planner)**: Using Gemini Pro, it breaks down the requirement into technical steps.
+3.  **Execution (Executor)**: It generates the code, test cases, or risk analysis report.
+4.  **Verification (Evaluator)**: It validates the output (Simulated User Testing or Visual Compare).
 5.  **Self-Correction**: If verification fails, it loops back to execution with a refined plan.
 
 ---
