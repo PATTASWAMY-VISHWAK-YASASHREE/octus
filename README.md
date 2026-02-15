@@ -18,19 +18,19 @@ A clean, modular architecture driving four intelligent engines. Each module oper
 
 ```mermaid
 graph TD
-    Client[React Frontend]
-    API[FastAPI Backend]
-    DB[(Firestore)]
-    AI[Gemini AI]
+    Client[⚛️ React Frontend]
+    API[⚡ FastAPI Backend]
+    DB[(🔥 Firestore)]
+    AI[✨ Gemini AI]
     
     Client -->|REST API| API
     API <-->|Persist| DB
     
     subgraph "Core AI Modules"
-        Planning[Planning Module]
-        TestGen[Test Gen Module]
-        Vision[Vision QA Module]
-        Insights[Insights Module]
+        Planning[📅 Planning Module]
+        TestGen[🧪 Test Gen Module]
+        Vision[👁️ Vision QA Module]
+        Insights[📊 Insights Module]
     end
     
     API --> Planning
@@ -48,30 +48,26 @@ graph TD
 
 ## ⚡ Tech Stack
 
-```mermaid
-graph TD
-    subgraph Frontend
-        React[React 18]
-        Vite[Vite]
-        TW[TailwindCSS]
-    end
-    
-    subgraph Backend
-        Fast[FastAPI]
-        Py[Python 3.10]
-    end
-    
-    subgraph AI_Data
-        Gem[Google Gemini Pro]
-        CV[OpenCV]
-        FB[Firebase]
-        Cloud[Cloudinary]
-    end
+### Frontend
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Threejs](https://img.shields.io/badge/threejs-black?style=for-the-badge&logo=three.js&logoColor=white)
 
-    React --> Fast
-    Fast --> Gem
-    Fast --> FB
-```
+### Backend
+![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+
+### AI & ML
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=google%20bard&logoColor=white)
+![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?style=for-the-badge&logo=opencv&logoColor=white)
+![LangChain](https://img.shields.io/badge/🦜🔗%20LangChain-1C3C3C?style=for-the-badge)
+
+### Infrastructure & Services
+![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=Cloudinary&logoColor=white)
+![Render](https://img.shields.io/badge/Render-%46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)
+
 
 ---
 
