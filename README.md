@@ -77,36 +77,59 @@ graph TD
 Octus operates on a continuous **Agentic Loop** that mimics a senior engineer's thought process. It doesn't just execute tasks; it verifies the output and visualizes the result before considering the job done.
 
 ```mermaid
-stateDiagram-v2
-    [*] --> Perception
+graph TD
+    Start((🚀 Start)) --> P(👀 Perception)
+    P ==> A{🧠 Analysis}
+    A ==> E[[⚡ Execution]]
+    E ==> V{{✅ Verification}}
     
-    state "👀 Perception" as Perception
-    Perception --> Analysis : User Input / GitHub Event
+    V -->|Pass| S([🌟 Success])
+    V -->|Fail| C((🛠️ Correction))
+    C -.->|Refine Plan| E
     
-    state "🧠 Analysis & Planning" as Analysis
-    Analysis --> Execution : Plan Formulated
-    
-    state "⚡ Execution" as Execution
-    Execution --> Verification : Code/Test Generated
-    
-    state "✅ Verification" as Verification
-    Verification --> Success : Tests Pass / UI Valid
-    Verification --> Correction : Failure Detected
-    
-    state "🛠️ Self-Correction" as Correction
-    Correction --> Execution : Refined Prompt/Context
-    
-    Success --> [*]
+    style Start fill:#2ecc71,stroke:#27ae60,stroke-width:2px,color:white
+    style P fill:#3498db,stroke:#2980b9,stroke-width:2px,color:white
+    style A fill:#9b59b6,stroke:#8e44ad,stroke-width:2px,color:white
+    style E fill:#e67e22,stroke:#d35400,stroke-width:2px,color:white
+    style V fill:#f1c40f,stroke:#f39c12,stroke-width:2px,color:black
+    style C fill:#e74c3c,stroke:#c0392b,stroke-width:2px,color:white
+    style S fill:#1abc9c,stroke:#16a085,stroke-width:2px,color:white
 ```
 
 ### How the Loop Works
 1.  **Perception**: The agent listens for User Stories, GitHub Push events, or Figma design updates.
-2.  **Analysis**: using Gemini Pro, it breaks down the requirement into technical steps (e.g., "Create Login Component", "Add Auth Service").
+2.  **Analysis**: Using Gemini Pro, it breaks down the requirement into technical steps.
 3.  **Execution**: It generates the code, test cases, or risk analysis report.
-4.  **Verification**:
-    *   *For Tests*: It creates the tests.
-    *   *For UI*: It compares the developed UI against the design using Computer Vision.
-5.  **Self-Correction**: If the verification fails (e.g., UI mismatch > 5%), the agent analyzes the diff and suggests a fix loop.
+4.  **Verification**: It validates the output (Simulated User Testing or Visual Compare).
+5.  **Self-Correction**: If verification fails, it loops back to execution with a refined plan.
+
+---
+
+## 🎬 AI Workflow: Test Generation
+**See how Octus turns a User Story into Code.**
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 User
+    participant F as ⚛️ Frontend
+    participant B as ⚡ Backend
+    participant G as 🐱 GitHub API
+    participant AI as ✨ Gemini Pro
+
+    U->>F: 📝 Input User Story
+    F->>B: POST /generate-tests
+    
+    rect rgb(20, 20, 20)
+        Note over B, AI: 🧠 RAG (Retrieval Augmented Generation) Process
+        B->>G: 🔍 Fetch Repo Context (Files)
+        G-->>B: Source Code
+        B->>AI: 🤖 Prompt: Story + Code Context
+        AI-->>B: 🧪 Generated Test Scripts (Gherkin/Pytest)
+    end
+    
+    B-->>F: ✅ Return Test Suite
+    F->>U: 👁️ Display & Run Tests
+```
 
 
 ---
