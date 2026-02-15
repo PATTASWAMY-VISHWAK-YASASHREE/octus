@@ -11,6 +11,7 @@ const VisualQATab = ({ projectId }) => {
   const { currentUser } = useAuth();
   const [activeMode, setActiveMode] = useState(null); // 'ux' or 'ui'
   const [uxScreens, setUxScreens] = useState([]);
+  const [userPrompt, setUserPrompt] = useState(''); // User's intent description
   const [isValidating, setIsValidating] = useState(false);
   const [validationResults, setValidationResults] = useState(null);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -66,6 +67,7 @@ const VisualQATab = ({ projectId }) => {
       const payload = {
         totalCount: uxScreens.length,
         images: imagesWithOrder,
+        user_prompt: userPrompt.trim() || undefined, // Include user's intent if provided
       };
 
       // Step 3: Send to backend for validation
@@ -95,6 +97,7 @@ const VisualQATab = ({ projectId }) => {
         screenCount: uxScreens.length,
         images: uploadedImages, // Cloudinary URLs with order
         results: reportData, // This will be saved as validationResults in Firestore
+        userPrompt: userPrompt.trim() || null, // Save user's intent
       };
       
       console.log('Validation data structure:', {
@@ -117,6 +120,7 @@ const VisualQATab = ({ projectId }) => {
         screenCount: uxScreens.length,
         images: uploadedImages,
         results: reportData,
+        userPrompt: userPrompt.trim() || null,
       };
       
       // Get existing reports from localStorage
@@ -567,6 +571,7 @@ const VisualQATab = ({ projectId }) => {
                 onClick={() => {
                   setActiveMode(null);
                   setUxScreens([]);
+                  setUserPrompt('');
                   setValidationResults(null);
                 }}
                 className="flex items-center gap-2 px-3 py-2 bg-slate-800/60 hover:bg-slate-700/60 text-slate-300 hover:text-white rounded-lg transition-all border border-slate-600/50 hover:border-slate-500/50"
@@ -646,6 +651,29 @@ const VisualQATab = ({ projectId }) => {
                     </button>
                   </div>
                 ))}
+              </div>
+
+              {/* User Intent Input */}
+              <div className="mb-8">
+                <label className="block mb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    <span className="text-base font-semibold text-white">Describe Your Intent (Optional)</span>
+                  </div>
+                  <textarea
+                    value={userPrompt}
+                    onChange={(e) => setUserPrompt(e.target.value)}
+                    placeholder="E.g., This is a checkout flow for an e-commerce app. Please validate the payment steps and error handling..."
+                    rows={4}
+                    className="w-full px-4 py-3 bg-slate-800/60 border-2 border-slate-700/50 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+                    style={{ color: '#fff', WebkitTextFillColor: '#fff', caretColor: '#fff' }}
+                  />
+                  <p className="text-xs text-slate-400 mt-2">
+                    Help the AI understand your flow better by describing what this UX flow is about and what you want to validate.
+                  </p>
+                </label>
               </div>
 
               {/* Validate Button */}
